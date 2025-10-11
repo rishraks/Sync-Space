@@ -1,4 +1,6 @@
 package com.web.syncspace.dto.register;
 
-public class AdminRegisterDTO {
+public class AdminRegisterDTO extends RegisterDTO {
+
+
 }
