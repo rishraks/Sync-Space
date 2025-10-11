@@ -5,7 +5,6 @@ import com.web.syncspace.exceptions.tokenexceptions.*;
 import com.web.syncspace.security.userdetaiils.CustomUserDetails;
 import com.web.syncspace.security.userdetaiils.CustomUserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +29,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private final AuthEntryPoint authEntryPoint;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws IOException {
 
         final String authHeader = request.getHeader("Authorization");
         String tokenPrefix = "Bearer ";

@@ -19,7 +19,7 @@ public class AdminServiceImpl implements AdminService {
     public RegisterResponseDTO registerAdmin(AdminRegisterDTO adminRegisterDTO) {
         Admin admin = Admin.builder()
                 .name(adminRegisterDTO.getName())
-                .userAuthentication(userAuthenticationFactory.saveAdmin(adminRegisterDTO))
+                .userAuthentication(userAuthenticationFactory.save(adminRegisterDTO))
                 .build();
 
         adminRepository.save(admin);

@@ -19,7 +19,7 @@ public class UsersServiceImpl implements UsersService {
     public RegisterResponseDTO registerUser(UsersRegisterDTO usersRegisterDTO) {
         Users users = Users.builder()
                 .name(usersRegisterDTO.getName())
-                .userAuthentication(userAuthenticationFactory.saveUser(usersRegisterDTO))
+                .userAuthentication(userAuthenticationFactory.save(usersRegisterDTO))
                 .build();
 
         usersRepository.save(users);

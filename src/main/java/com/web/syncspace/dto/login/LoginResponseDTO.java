@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Builder
 @Getter
 @AllArgsConstructor
@@ -17,9 +19,9 @@ public class LoginResponseDTO {
     private long expiresIn;
 
     @Builder.Default
-    private String tokenType = "Bearer";
+    private String tokenType = "JWT";
 
-    private Role role;
+    private List<String> role;
 
     private String message;
 

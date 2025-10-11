@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.ServletWebRequest;
 
 import java.io.IOException;
 import java.time.OffsetDateTime;
@@ -31,15 +30,15 @@ public class AuthEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
 
         String message = switch (authException) {
-            case InvalidTokenException ex -> "Access token is invalid " + ex.getMessage();
-            case MalformedTokenException ex -> "Access token is malformed " + ex.getMessage();
-            case TokenBlacklistedException ex -> "Access token is blacklisted " + ex.getMessage();
-            case TokenExpiredException ex -> "Access token is expired " + ex.getMessage();
+            case InvalidTokenException ex -> ex.getMessage();
+            case MalformedTokenException ex -> ex.getMessage();
+            case TokenBlacklistedException ex -> ex.getMessage();
+            case TokenExpiredException ex -> ex.getMessage();
             default -> "Authentication failed " + authException.getMessage();
         };
 
         ErrorResponseDTO errorResponseDTO = ErrorResponseDTO.builder()
-                .apiUri(((ServletWebRequest) request).getRequest().getRequestURI())
+                .apiUri(request.getRequestURI())
                 .httpStatus(HttpStatus.UNAUTHORIZED)
                 .errorMessage(message)
                 .timestamp(OffsetDateTime.now(ZoneOffset.UTC))
