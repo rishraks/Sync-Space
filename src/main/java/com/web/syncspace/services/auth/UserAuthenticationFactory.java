@@ -1,6 +1,7 @@
 package com.web.syncspace.services.auth;
 
 import com.web.syncspace.config.SecurityConfig;
+import com.web.syncspace.dto.register.AdminRegisterDTO;
 import com.web.syncspace.dto.register.UsersRegisterDTO;
 import com.web.syncspace.enums.Role;
 import com.web.syncspace.models.auth.UserAuthentication;
@@ -21,4 +22,14 @@ public class UserAuthenticationFactory {
                 .role(Role.USER)
                 .build();
     }
+
+    public UserAuthentication saveAdmin(AdminRegisterDTO adminRegisterDTO) {
+        return UserAuthentication.builder()
+                .email(adminRegisterDTO.getEmail())
+                .password(securityConfig.passwordEncoder().encode(adminRegisterDTO.getPassword()))
+                .mobileNumber(adminRegisterDTO.getMobileNumber())
+                .role(Role.ADMIN)
+                .build();
+    }
+
 }
