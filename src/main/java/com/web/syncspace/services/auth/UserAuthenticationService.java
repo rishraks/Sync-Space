@@ -16,4 +16,6 @@ public interface UserAuthenticationService {
     AuthResponseDTO login(@Valid LoginDTO loginDTO);
 
     void logout(String accessToken, String refreshToken);
+
+    AuthResponseDTO refreshToken(String refreshToken);
 }

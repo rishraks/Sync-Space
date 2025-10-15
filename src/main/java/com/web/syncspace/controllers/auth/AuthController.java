@@ -91,4 +91,29 @@ public class AuthController {
     }
 
 
+    @PostMapping("/refresh-token")
+    public ResponseEntity<ResponseDTO<LoginResponseDTO>> refreshToken(@CookieValue(value = "refreshToken") String refreshToken, HttpServletResponse httpServletResponse) {
+        AuthResponseDTO authResponseDTO = userAuthenticationService.refreshToken(refreshToken);
+        ResponseCookie responseCookie = ResponseCookie.from("refreshToken", authResponseDTO.getRefreshToken())
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .path("/")
+                .maxAge(24 * 60 * 60)
+                .build();
+        httpServletResponse.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
+
+        LoginResponseDTO loginResponseDTO = authResponseDTO.getLoginResponseDTO();
+
+        ResponseDTO<LoginResponseDTO> responseDTO = ResponseDTO.<LoginResponseDTO>builder()
+                .statusCode(Constants.SUCCESS_CODE)
+                .statusMessage(Constants.SUCCESS_MESSAGE)
+                .data(loginResponseDTO)
+                .additionalData("Token refreshed successfully!!!")
+                .build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+    }
+
+
 }

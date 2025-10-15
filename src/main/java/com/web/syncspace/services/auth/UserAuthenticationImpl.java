@@ -8,6 +8,9 @@ import com.web.syncspace.dto.register.RegisterResponseDTO;
 import com.web.syncspace.dto.register.UsersRegisterDTO;
 import com.web.syncspace.exceptions.others.BadCredentialException;
 import com.web.syncspace.exceptions.others.DuplicateResourceException;
+import com.web.syncspace.exceptions.tokenexceptions.InvalidTokenException;
+import com.web.syncspace.exceptions.tokenexceptions.MalformedTokenException;
+import com.web.syncspace.exceptions.tokenexceptions.TokenBlacklistedException;
 import com.web.syncspace.repositories.auth.UserAuthenticationRepository;
 import com.web.syncspace.security.jwt.JwtBlacklistService;
 import com.web.syncspace.security.jwt.JwtUtil;
@@ -84,6 +87,34 @@ public class UserAuthenticationImpl implements UserAuthenticationService {
         long accessTokenExpirationMs = jwtUtil.extractAccessTokenExpirationDate(accessToken).getTime();
         long refreshExpirationMs = jwtUtil.extractRefreshTokenExpirationDate(refreshToken).getTime();
         jwtBlacklistService.blacklistToken(accessToken, refreshToken, accessTokenExpirationMs, refreshExpirationMs);
+    }
+
+    @Override
+    public AuthResponseDTO refreshToken(String refreshToken) {
+        CustomUserDetails customUserDetails = (CustomUserDetails) customUserDetailsServiceImpl.loadUserByUsername(jwtUtil.extractUsername(refreshToken));
+        if (!jwtUtil.isTokenStructureValid(refreshToken)) {
+            throw new MalformedTokenException("Invalid refresh token structure!!!");
+        }
+        if (jwtBlacklistService.isTokenBlacklisted(refreshToken)) {
+            throw new TokenBlacklistedException("Refresh token is blacklisted!!!");
+        }
+        if (jwtUtil.isTokenExpired(refreshToken)) {
+            throw new TokenBlacklistedException("Refresh token is expired!!!");
+        } else if (jwtUtil.isTokenValid(refreshToken, customUserDetails)) {
+            String accessToken = jwtUtil.generateAccessToken(customUserDetails);
+            String newRefreshToken = jwtUtil.generateRefreshToken(customUserDetails);
+            return AuthResponseDTO.builder()
+                    .loginResponseDTO(LoginResponseDTO.builder()
+                            .accessToken(accessToken)
+                            .expiresIn(jwtUtil.extractAccessTokenExpirationDate(accessToken).toInstant().getEpochSecond())
+                            .tokenType("JWT")
+                            .role(jwtUtil.extractRole(accessToken))
+                            .message("Don't share your token with anyone!!")
+                            .build())
+                    .refreshToken(newRefreshToken)
+                    .build();
+        }
+        throw new InvalidTokenException("Invalid refresh token!!");
     }
 
 
