@@ -18,6 +18,9 @@ public class RegisterResponseDTO {
 
     private String name;
 
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private String username;
+
     private String email;
 
     private String mobileNumber;

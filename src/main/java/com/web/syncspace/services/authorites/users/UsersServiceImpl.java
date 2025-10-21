@@ -1,5 +1,6 @@
 package com.web.syncspace.services.authorites.users;
 
+import com.web.syncspace.config.UsernameGenerator;
 import com.web.syncspace.dto.register.RegisterResponseDTO;
 import com.web.syncspace.dto.register.UsersRegisterDTO;
 import com.web.syncspace.models.authorities.Users;
@@ -14,11 +15,13 @@ public class UsersServiceImpl implements UsersService {
 
     private final UserAuthenticationFactory userAuthenticationFactory;
     private final UsersRepository usersRepository;
+    private final UsernameGenerator usernameGenerator;
 
     @Override
     public RegisterResponseDTO registerUser(UsersRegisterDTO usersRegisterDTO) {
         Users users = Users.builder()
                 .name(usersRegisterDTO.getName())
+                .username(usernameGenerator.generateUsername(usersRegisterDTO.getName()))
                 .userAuthentication(userAuthenticationFactory.save(usersRegisterDTO))
                 .build();
 
@@ -26,6 +29,7 @@ public class UsersServiceImpl implements UsersService {
 
         return RegisterResponseDTO.builder()
                 .name(users.getName())
+                .username(users.getUsername())
                 .email(users.getUserAuthentication().getEmail())
                 .mobileNumber(users.getUserAuthentication().getMobileNumber())
                 .profileImageUrl(users.getProfileImageUrl())
